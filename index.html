@@ -1,1099 +1,454 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Giver · Memory Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Raleway:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<title>The Giver – Analysis Academy</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-:root{--bg:#06080f;--surface:#0c1020;--card:#111827;--border:#1e2d4a;--gold:#c8a84b;--golddim:#7a6229;--blue:#3d6fa3;--red:#7a2035;--text:#ddd8cc;--dim:#7a8fa8;--green:#3dba76;--xp:#c8a84b}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Raleway',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow:hidden}
-#auth{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse at 50% 40%,#0e1628 0%,#06080f 70%);position:relative;overflow:hidden}
-#auth::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(200,168,75,.06) 1px,transparent 1px);background-size:32px 32px;pointer-events:none}
-.auth-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:44px 40px;width:400px;box-shadow:0 0 80px rgba(200,168,75,.07),0 24px 60px rgba(0,0,0,.6);position:relative}
-.auth-title{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--gold);text-align:center;margin-bottom:2px;font-style:italic}
-.auth-sub{font-size:.72rem;color:var(--dim);text-align:center;letter-spacing:.18em;text-transform:uppercase;margin-bottom:30px}
-.auth-tabs{display:flex;border:1px solid var(--border);border-radius:8px;margin-bottom:22px;overflow:hidden}
-.auth-tab{flex:1;padding:10px;background:transparent;border:none;cursor:pointer;font-family:'Raleway',sans-serif;font-size:.82rem;font-weight:600;color:var(--dim);letter-spacing:.06em;transition:all .2s}
-.auth-tab.active{background:var(--gold);color:var(--bg)}
-.fl{margin-bottom:14px}
-.fl label{display:block;font-size:.7rem;font-weight:700;color:var(--dim);margin-bottom:5px;letter-spacing:.12em;text-transform:uppercase}
-.fi{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:11px 13px;color:var(--text);font-family:'Raleway',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s}
-.fi:focus{border-color:var(--gold)}
-.btn-pri{width:100%;background:var(--gold);border:none;border-radius:8px;padding:13px;color:var(--bg);font-family:'Raleway',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;margin-top:6px;transition:all .2s}
-.btn-pri:hover{background:#ddbf5c;transform:translateY(-1px)}
-.amsg{text-align:center;font-size:.78rem;margin-top:10px;min-height:16px;color:var(--dim)}
-.amsg.err{color:#e05070}.amsg.ok{color:var(--green)}
-#app{display:none;height:100vh;overflow:hidden}
-.layout{display:flex;height:100vh}
-.sb{width:215px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
-.sb-head{padding:18px 15px 14px;border-bottom:1px solid var(--border)}
-.sb-title{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--gold);font-style:italic}
-.sb-user{font-size:.68rem;color:var(--dim);margin-top:2px}
-.sb-xp{padding:10px 15px;border-bottom:1px solid var(--border)}
-.xp-lbl{display:flex;justify-content:space-between;font-size:.65rem;color:var(--dim);margin-bottom:5px;letter-spacing:.05em}
-.xp-bg{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-.xp-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .5s ease}
-.sb-streak{padding:7px 15px 8px;border-bottom:1px solid var(--border);font-size:.72rem;color:var(--dim)}
-.nav{flex:1;overflow-y:auto;padding:6px 0;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-.ni{display:flex;align-items:center;gap:9px;padding:9px 15px;cursor:pointer;font-size:.77rem;font-weight:500;color:var(--dim);border-left:2px solid transparent;transition:all .15s;user-select:none}
-.ni:hover{color:var(--text);background:rgba(200,168,75,.04)}
-.ni.active{color:var(--gold);background:rgba(200,168,75,.07);border-left-color:var(--gold)}
-.ni-ic{font-size:.85rem;width:15px;text-align:center;flex-shrink:0}
-.sb-out{padding:10px 15px;border-top:1px solid var(--border)}
-.btn-out{width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:7px;color:var(--dim);font-family:'Raleway',sans-serif;font-size:.72rem;cursor:pointer;transition:all .2s}
-.btn-out:hover{border-color:var(--red);color:#e05070}
-.main{flex:1;overflow-y:auto;padding:30px 32px;background:var(--bg);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-.sec{display:none;animation:fi .25s ease}
-.sec.active{display:block}
-@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.stitle{font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:var(--gold);margin-bottom:4px}
-.sdesc{font-size:.82rem;color:var(--dim);margin-bottom:24px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:14px}
-.ctitle{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--gold);margin-bottom:10px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center}
-.sv{font-family:'Playfair Display',serif;font-size:2.1rem;font-weight:700;color:var(--gold)}
-.sl{font-size:.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-top:3px}
-.cdown{background:linear-gradient(135deg,#111827,#0e1422);border:1px solid var(--golddim);border-radius:12px;padding:22px;text-align:center;margin-bottom:20px}
-.cdown-l{font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:.16em;margin-bottom:6px}
-.cdown-n{font-family:'Playfair Display',serif;font-size:3.8rem;font-weight:700;color:var(--gold);line-height:1}
-.cdown-s{font-size:.78rem;color:var(--dim);margin-top:4px}
-.fc-wrap{perspective:1000px;width:100%;max-width:480px;height:240px;margin:0 auto 20px;cursor:pointer}
-.fc{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .48s ease}
-.fc.flip{transform:rotateY(180deg)}
-.fc-face{position:absolute;inset:0;background:var(--card);border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;backface-visibility:hidden;text-align:center}
-.fc-face.back{transform:rotateY(180deg);background:linear-gradient(135deg,#111827,#0e1422);border-color:var(--golddim)}
-.fc-word{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:var(--gold);margin-bottom:6px}
-.fc-type{font-size:.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
-.fc-def{font-size:.95rem;color:var(--text);line-height:1.6}
-.fc-ctx{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--dim);margin-top:10px;font-style:italic}
-.fc-hint{font-size:.7rem;color:var(--dim);margin-top:14px}
-.fc-ctrl{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px}
-.fc-ctr{font-size:.78rem;color:var(--dim)}
-.q-prog{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-.q-pb{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-.q-pf{height:100%;background:var(--gold);border-radius:2px;transition:width .3s}
-.q-sc{font-size:.72rem;color:var(--dim)}
-.q-question{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--text);margin-bottom:8px;line-height:1.6}
-.q-passage{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--dim);background:var(--surface);border-left:3px solid var(--golddim);padding:12px 15px;border-radius:0 8px 8px 0;margin-bottom:18px;line-height:1.75;font-style:italic}
-.q-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
-.q-opt{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:11px 14px;cursor:pointer;font-size:.83rem;color:var(--text);text-align:left;font-family:'Raleway',sans-serif;transition:all .18s}
-.q-opt:hover:not([disabled]){border-color:var(--gold);background:rgba(200,168,75,.05)}
-.q-opt.correct{border-color:var(--green)!important;background:rgba(61,186,118,.1)!important;color:var(--green)!important}
-.q-opt.wrong{border-color:#e05070!important;background:rgba(224,80,112,.1)!important;color:#e05070!important}
-.q-opt[disabled]{cursor:default}
-.q-fb{padding:11px 14px;border-radius:8px;font-size:.82rem;margin-top:4px;display:none;line-height:1.6}
-.q-fb.show{display:block}
-.q-fb.correct{background:rgba(61,186,118,.08);color:var(--green);border:1px solid rgba(61,186,118,.25)}
-.q-fb.wrong{background:rgba(224,80,112,.08);color:#e05070;border:1px solid rgba(224,80,112,.25)}
-.tf-btns{display:flex;gap:12px;margin-top:16px}
-.tf-btn{flex:1;padding:13px;border:2px solid var(--border);border-radius:10px;font-family:'Raleway',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;background:transparent;letter-spacing:.1em;transition:all .2s}
-.tf-btn.t{color:var(--green)}.tf-btn.f{color:#e05070}
-.tf-btn.t:hover:not([disabled]){border-color:var(--green);background:rgba(61,186,118,.08)}
-.tf-btn.f:hover:not([disabled]){border-color:#e05070;background:rgba(224,80,112,.08)}
-.tf-btn[disabled]{cursor:default;opacity:.7}
-.res{text-align:center;padding:36px 20px}
-.res-score{font-family:'Playfair Display',serif;font-size:3.2rem;font-weight:700;color:var(--gold)}
-.res-lbl{font-size:.83rem;color:var(--dim);margin-top:4px}
-.xp-pill{display:inline-block;background:rgba(200,168,75,.12);border:1px solid var(--golddim);border-radius:20px;padding:4px 16px;font-size:.78rem;color:var(--gold);margin:10px 0 18px}
-.sym{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;transition:border-color .2s}
-.sym:hover{border-color:var(--golddim)}
-.sym-ic{font-size:1.8rem;margin-bottom:8px}
-.sym-nm{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--gold);margin-bottom:6px}
-.sym-th{font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
-.sym-tx{font-size:.78rem;color:var(--dim);line-height:1.65}
-.sym-q{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--dim);margin-top:9px;padding-top:9px;border-top:1px solid var(--border);font-style:italic}
-.qf{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
-.qf-btn{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-family:'Raleway',sans-serif;font-size:.72rem;color:var(--dim);cursor:pointer;transition:all .2s}
-.qf-btn:hover,.qf-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(200,168,75,.06)}
-.qi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:9px}
-.qi-txt{font-family:'Playfair Display',serif;font-size:.92rem;font-style:italic;color:var(--text);line-height:1.7;margin-bottom:7px}
-.qi-meta{display:flex;gap:6px;flex-wrap:wrap}
-.qi-spk{font-size:.65rem;padding:2px 8px;border-radius:10px;background:var(--surface);color:var(--dim)}
-.qi-tag{font-size:.65rem;padding:2px 8px;border-radius:10px;background:rgba(200,168,75,.08);color:var(--gold);border:1px solid var(--golddim)}
-.qi-dev{font-size:.65rem;padding:2px 8px;border-radius:10px;background:rgba(61,110,163,.12);color:#7ab3e0;border:1px solid #3d6fa3}
-.emo-tl{position:relative;padding-left:28px}
-.emo-tl::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--blue),var(--gold),#8b2635,var(--green))}
-.emo-ph{position:relative;margin-bottom:26px}
-.emo-dot{position:absolute;left:-24px;top:3px;width:12px;height:12px;border-radius:50%;border:2px solid var(--bg)}
-.emo-chs{font-size:.67rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px}
-.emo-tit{font-family:'Playfair Display',serif;font-size:.98rem;font-weight:600;margin-bottom:6px}
-.emo-desc{font-size:.8rem;color:var(--dim);line-height:1.65}
-.emo-wds{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
-.emo-w{font-size:.68rem;padding:2px 9px;border-radius:10px;background:var(--surface);color:var(--dim)}
-.tec{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:13px}
-.tec-nm{font-family:'Playfair Display',serif;font-size:.97rem;color:var(--gold);display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-.tec-lbl{font-size:.62rem;background:rgba(200,168,75,.12);border:1px solid var(--golddim);color:var(--gold);padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.07em}
-.tec-tx{font-size:.8rem;color:var(--text);line-height:1.72;margin-bottom:8px}
-.tec-tip{font-size:.75rem;color:var(--dim);line-height:1.65;margin-top:6px;padding:10px 12px;background:var(--surface);border-radius:8px}
-.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:11px}
-.ach-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 12px;text-align:center;transition:all .2s}
-.ach-item.earned{border-color:var(--golddim);background:rgba(200,168,75,.04)}
-.ach-item:not(.earned){opacity:.38;filter:grayscale(1)}
-.ach-ic{font-size:1.9rem;margin-bottom:7px}
-.ach-nm{font-size:.72rem;font-weight:700;color:var(--gold);margin-bottom:3px}
-.ach-desc{font-size:.63rem;color:var(--dim)}
-.fb-wrap{font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:2.2;color:var(--text);background:var(--surface);padding:18px;border-radius:10px;border-left:3px solid var(--golddim);margin-bottom:14px}
-.fb-in{display:inline-block;background:transparent;border:none;border-bottom:2px solid var(--golddim);padding:1px 7px;color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:.82rem;min-width:90px;outline:none;transition:border-color .2s}
-.fb-in:focus{border-bottom-color:var(--gold)}
-.ws-item{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 14px;margin-bottom:8px}
-.ws-q{font-size:.8rem;color:var(--text);flex:1;line-height:1.5}
-.ws-cnt{font-size:.72rem;color:#e05070;background:rgba(224,80,112,.1);border-radius:10px;padding:2px 9px;margin-left:10px;white-space:nowrap}
-.pl-day{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:13px}
-.pl-ttl{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--gold);display:flex;align-items:center;gap:9px;margin-bottom:4px}
-.pl-sub{font-size:.67rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:11px}
-.pl-task{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--dim);line-height:1.5}
-.pl-task:last-child{border-bottom:none}
-.pl-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:7px}
-.btn-g{background:transparent;border:1px solid var(--border);border-radius:8px;padding:7px 14px;color:var(--dim);font-family:'Raleway',sans-serif;font-size:.77rem;cursor:pointer;transition:all .2s}
-.btn-g:hover{border-color:var(--gold);color:var(--gold)}
-#toast{position:fixed;bottom:22px;right:22px;background:var(--card);border:1px solid var(--golddim);border-radius:10px;padding:11px 18px;font-size:.8rem;color:var(--gold);transform:translateY(70px);transition:transform .3s ease;z-index:9999;max-width:280px;box-shadow:0 8px 30px rgba(0,0,0,.4)}
-#toast.show{transform:translateY(0)}
+
+body{
+font-family:Arial;
+margin:0;
+background:#eef2f7;
+}
+
+header{
+background:#111827;
+color:white;
+padding:25px;
+text-align:center;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:white;
+padding:25px;
+margin-bottom:20px;
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+button{
+padding:10px 16px;
+margin:5px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+input,textarea{
+padding:10px;
+margin:5px 0;
+width:100%;
+}
+
+.hidden{
+display:none;
+}
+
+.progress{
+background:#ddd;
+height:20px;
+border-radius:10px;
+}
+
+.progressbar{
+height:20px;
+background:#2563eb;
+width:0%;
+border-radius:10px;
+}
+
+.exercise{
+border:2px dashed #ccc;
+padding:15px;
+margin-top:10px;
+}
+
 </style>
 </head>
-<body>
-<div id="toast"></div>
 
-<div id="auth">
-  <div class="auth-box">
-    <div class="auth-title">The Giver</div>
-    <div class="auth-sub">Memory Portal · Study System</div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchTab('login')">Login</button>
-      <button class="auth-tab" onclick="switchTab('register')">Register</button>
-    </div>
-    <div id="lf">
-      <div class="fl"><label>Username</label><input class="fi" id="lu" placeholder="Enter username" onkeydown="if(event.key==='Enter')handleLogin()"></div>
-      <div class="fl"><label>Password</label><input class="fi" type="password" id="lp" placeholder="Enter password" onkeydown="if(event.key==='Enter')handleLogin()"></div>
-      <button class="btn-pri" id="lbtn" onclick="handleLogin()">Enter the Community</button>
-      <div class="amsg" id="lmsg"></div>
-    </div>
-    <div id="rf" style="display:none">
-      <div class="fl"><label>Username</label><input class="fi" id="ru" placeholder="Choose a username"></div>
-      <div class="fl"><label>Password</label><input class="fi" type="password" id="rp" placeholder="At least 4 characters"></div>
-      <button class="btn-pri" onclick="handleRegister()">Create Account</button>
-      <div class="amsg" id="rmsg"></div>
-    </div>
-  </div>
+<body>
+
+<header>
+
+<h1>The Giver – Interactive Analysis Course</h1>
+
+<p>Learn how to analyze novel excerpts (EF level)</p>
+
+</header>
+
+<div class="container">
+
+<!-- LOGIN -->
+
+<div id="loginCard" class="card">
+
+<h2>Login</h2>
+
+<input id="email" placeholder="email">
+<input id="password" type="password" placeholder="password">
+
+<button onclick="login()">Login</button>
+
+<button onclick="showRegister()">Register</button>
+
+<p id="loginMsg"></p>
+
 </div>
 
-<div id="app">
-  <div class="layout">
-    <nav class="sb">
-      <div class="sb-head">
-        <div class="sb-title">The Giver</div>
-        <div class="sb-user" id="sb-user">–</div>
-      </div>
-      <div class="sb-xp">
-        <div class="xp-lbl"><span id="lvl-lbl">Level 1 · Citizen</span><span id="xp-lbl">0 XP</span></div>
-        <div class="xp-bg"><div class="xp-fill" id="xp-bar" style="width:0%"></div></div>
-      </div>
-      <div class="sb-streak"><span style="color:#ff7c3a">🔥</span> <span id="streak-n">0</span> day streak</div>
-      <div class="nav">
-        <div class="ni active" onclick="nav('dashboard',this)"><span class="ni-ic">◈</span>Dashboard</div>
-        <div class="ni" onclick="nav('narrative',this)"><span class="ni-ic">◎</span>Narrative Perspective</div>
-        <div class="ni" onclick="nav('symbols',this)"><span class="ni-ic">◆</span>Symbols & Motifs</div>
-        <div class="ni" onclick="nav('quotes',this)"><span class="ni-ic">❝</span>Key Quotes</div>
-        <div class="ni" onclick="nav('emotions',this)"><span class="ni-ic">◉</span>Emotional Journey</div>
-        <div class="ni" onclick="nav('flashcards',this)"><span class="ni-ic">⬡</span>Flashcards</div>
-        <div class="ni" onclick="nav('devices',this)"><span class="ni-ic">⊞</span>Stylistic Devices Quiz</div>
-        <div class="ni" onclick="nav('blanks',this)"><span class="ni-ic">▭</span>Fill the Blank</div>
-        <div class="ni" onclick="nav('attribution',this)"><span class="ni-ic">❮❯</span>Quote Attribution</div>
-        <div class="ni" onclick="nav('truefalse',this)"><span class="ni-ic">⊘</span>True / False</div>
-        <div class="ni" onclick="nav('weakspots',this)"><span class="ni-ic">⚠</span>Weak Spots</div>
-        <div class="ni" onclick="nav('achievements',this)"><span class="ni-ic">✦</span>Achievements</div>
-        <div class="ni" onclick="nav('planner',this)"><span class="ni-ic">◷</span>Study Planner</div>
-      </div>
-      <div class="sb-out"><button class="btn-out" onclick="logout()">← Leave Community</button></div>
-    </nav>
-    <main class="main">
+<!-- REGISTER -->
 
-<section class="sec active" id="s-dashboard">
-  <div class="stitle">Dashboard</div>
-  <div class="sdesc">Your journey to becoming the next Receiver of Memory</div>
-  <div class="cdown">
-    <div class="cdown-l">📅 Exam Countdown</div>
-    <div class="cdown-n" id="cd-days">–</div>
-    <div class="cdown-s" id="cd-sub">–</div>
-  </div>
-  <div class="g3" style="margin-bottom:16px">
-    <div class="stat"><div class="sv" id="d-xp">0</div><div class="sl">Total XP</div></div>
-    <div class="stat"><div class="sv" id="d-str">0</div><div class="sl">Day Streak 🔥</div></div>
-    <div class="stat"><div class="sv" id="d-bdg">0</div><div class="sl">Badges Earned</div></div>
-  </div>
-  <div class="card">
-    <div class="ctitle">🎯 Focus for Today</div>
-    <p style="font-size:.8rem;color:var(--dim);line-height:1.75">Start with <strong style="color:var(--gold)">Narrative Perspective</strong> — understand 3rd person limited & free indirect speech first. Then tackle <strong style="color:var(--gold)">Stylistic Devices</strong>. Use <strong style="color:var(--gold)">Key Quotes</strong> when writing essays. Warm up vocabulary with Flashcards before any quiz.</p>
-  </div>
-  <div class="card">
-    <div class="ctitle">📊 Recent Results</div>
-    <div id="d-results"><p style="font-size:.8rem;color:var(--dim)">No quizzes yet — start practicing!</p></div>
-  </div>
-</section>
+<div id="registerCard" class="card hidden">
 
-<section class="sec" id="s-narrative">
-  <div class="stitle">Narrative Perspective</div>
-  <div class="sdesc">Lowry's core techniques — essential vocabulary for your analysis essay</div>
-  <div class="tec">
-    <div class="tec-nm">Third-Person Limited Narration <span class="tec-lbl">Core Technique</span></div>
-    <div class="tec-tx">The narrator tells the story from outside Jonas's body but only has access to <em>Jonas's</em> thoughts and feelings — never those of other characters. This is the novel's foundational narrative choice. The reader sees the Community exclusively through Jonas's eyes, which means our understanding of it grows and shifts exactly as his does.</div>
-    <div class="q-passage">"Jonas felt the joy of it — the freedom and joy — and he shouted with pleasure."</div>
-    <div class="tec-tip">📝 <strong style="color:var(--gold)">Essay tip:</strong> Name this technique explicitly: "Lowry employs third-person limited narration, restricting the reader's perspective to Jonas's developing consciousness." This immediately signals analytical sophistication.</div>
-  </div>
-  <div class="tec">
-    <div class="tec-nm">Free Indirect Speech / Discourse <span class="tec-lbl">Advanced</span></div>
-    <div class="tec-tx">Lowry frequently merges the narrator's voice with Jonas's inner thoughts without quotation marks or "he thought." This is called <em>free indirect discourse</em> — the boundary between narrator and character dissolves. The effect is emotional closeness: we feel as if we <em>are</em> Jonas, not merely observing him.</div>
-    <div class="q-passage">"It was almost December, and Jonas was beginning to feel frightened."</div>
-    <div class="tec-tip">📝 <strong style="color:var(--gold)">Essay tip:</strong> "The opening line employs free indirect speech — 'beginning to feel frightened' voices Jonas's inner state without attribution, immediately drawing the reader into his subjective experience and establishing the novel's intimate psychological register."</div>
-  </div>
-  <div class="tec">
-    <div class="tec-nm">Dramatic Irony <span class="tec-lbl">Important</span></div>
-    <div class="tec-tx">The reader perceives more than Jonas does — especially in early chapters. "Release" is presented positively by all characters including the narrator (who mirrors Jonas's uncritical worldview). But a careful reader senses something is wrong. This gap between what Jonas understands and what the reader suspects creates sustained dread.</div>
-    <div class="q-passage">"Release was a celebration... his father bent over the newchild and carefully positioned a syringe."</div>
-    <div class="tec-tip">📝 <strong style="color:var(--gold)">Essay tip:</strong> Track how the dramatic irony collapses in Chapter 19 — Jonas finally sees what the reader already knew. Discuss how Lowry weaponizes this gap to implicate the reader in the Community's willful blindness.</div>
-  </div>
-  <div class="tec">
-    <div class="tec-nm">Tonal Shift & Narrative Distance <span class="tec-lbl">Key for Analysis</span></div>
-    <div class="tec-tx">In early chapters, the narrative voice is calm, neutral — mirroring Jonas's unquestioning acceptance of his world. As Jonas gains memories, the narrative distance <em>collapses</em>: language becomes emotionally charged, ironic, even desperate. This tonal shift is itself a literary device — the narrator's tone tracks Jonas's awakening.</div>
-    <div class="tec-tip">📝 <strong style="color:var(--gold)">Essay tip:</strong> Compare Ch. 1: "the Community was orderly, precise, and safe" (neutral) with Ch. 19: "He killed it. My father killed it." (raw, repetitive, traumatised). The contrast demonstrates mastery of close reading.</div>
-  </div>
-  <div class="tec">
-    <div class="tec-nm">Euphemism as Narrative Control <span class="tec-lbl">Language</span></div>
-    <div class="tec-tx">The Community's sanitized language — "Release," "Elsewhere," "Precision of Language" — is initially adopted by the narrator without irony. This mirrors how the Community controls thought through language. As Jonas gains understanding, the gap between the Community's words and their true meaning becomes the novel's central dramatic tension.</div>
-    <div class="q-passage">"'Precision of language, Jonas!' his father corrected him pleasantly."</div>
-    <div class="tec-tip">📝 <strong style="color:var(--gold)">Essay tip:</strong> "'Release' functions as a euphemism, replacing the reality of death with a vocabulary of celebration. Lowry's use of this term — initially unmarked, later devastating — demonstrates how language can be weaponised to suppress moral awareness."</div>
-  </div>
-</section>
+<h2>Create Account</h2>
 
-<section class="sec" id="s-symbols">
-  <div class="stitle">Symbols & Motifs</div>
-  <div class="sdesc">Key recurring symbols — understand their significance for analytical writing</div>
-  <div class="g2" id="sym-grid"></div>
-</section>
+<input id="regEmail">
+<input id="regPass" type="password">
 
-<section class="sec" id="s-quotes">
-  <div class="stitle">Key Quotes Library</div>
-  <div class="sdesc">Organized by theme — use these as textual evidence in your analysis</div>
-  <div class="qf" id="q-filters"></div>
-  <div id="q-list"></div>
-</section>
+<button onclick="register()">Register</button>
 
-<section class="sec" id="s-emotions">
-  <div class="stitle">Jonas's Emotional Journey</div>
-  <div class="sdesc">How Jonas's inner world transforms across the novel — essential for character analysis</div>
-  <div class="emo-tl" id="emo-tl"></div>
-</section>
+<button onclick="showLogin()">Back</button>
 
-<section class="sec" id="s-flashcards">
-  <div class="stitle">Vocabulary Flashcards</div>
-  <div class="sdesc">20 key words from the novel — click a card to flip it · +5 XP per word revealed</div>
-  <div class="fc-wrap" onclick="flipCard()">
-    <div class="fc" id="fc">
-      <div class="fc-face front"><div class="fc-word" id="fc-w">–</div><div class="fc-type" id="fc-t">–</div><div class="fc-hint">click to reveal definition</div></div>
-      <div class="fc-face back"><div class="fc-def" id="fc-d">–</div><div class="fc-ctx" id="fc-c">–</div></div>
-    </div>
-  </div>
-  <div class="fc-ctrl">
-    <button class="btn-g" onclick="fcPrev()">← Prev</button>
-    <span class="fc-ctr" id="fc-ctr">1 / 20</span>
-    <button class="btn-g" onclick="fcNext()">Next →</button>
-  </div>
-  <div style="text-align:center;margin-top:10px"><button class="btn-g" onclick="fcShuffle()">⇄ Shuffle</button></div>
-</section>
+<p id="regMsg"></p>
 
-<section class="sec" id="s-devices">
-  <div class="stitle">Stylistic Devices Quiz</div>
-  <div class="sdesc">Identify literary techniques in passages from The Giver · +10 XP per correct answer</div>
-  <div class="card" id="dq-card">
-    <div class="q-prog"><div class="q-pb"><div class="q-pf" id="dq-pf" style="width:0%"></div></div><span class="q-sc" id="dq-sc">0 / 10</span></div>
-    <div id="dq-body"></div>
-  </div>
-</section>
+</div>
 
-<section class="sec" id="s-blanks">
-  <div class="stitle">Fill in the Blank</div>
-  <div class="sdesc">Complete the key passages · +8 XP per correct answer · Press Enter or click Check</div>
-  <div class="card" id="fb-card"></div>
-</section>
+<!-- DASHBOARD -->
 
-<section class="sec" id="s-attribution">
-  <div class="stitle">Quote Attribution</div>
-  <div class="sdesc">Who said it? · +10 XP per correct answer</div>
-  <div class="card" id="aq-card">
-    <div class="q-prog"><div class="q-pb"><div class="q-pf" id="aq-pf" style="width:0%"></div></div><span class="q-sc" id="aq-sc">0 / 10</span></div>
-    <div id="aq-body"></div>
-  </div>
-</section>
+<div id="dashboard" class="hidden">
 
-<section class="sec" id="s-truefalse">
-  <div class="stitle">True / False</div>
-  <div class="sdesc">Rapid fire — test your plot knowledge · +5 XP per correct answer</div>
-  <div class="card" id="tf-card"></div>
-</section>
+<div class="card">
 
-<section class="sec" id="s-weakspots">
-  <div class="stitle">Weak Spots</div>
-  <div class="sdesc">Questions you've gotten wrong — review these before the exam</div>
-  <div id="ws-list"></div>
-</section>
+<h2>Your Progress</h2>
 
-<section class="sec" id="s-achievements">
-  <div class="stitle">Achievements</div>
-  <div class="sdesc">Badges earned on your journey through the Community</div>
-  <div class="ach-grid" id="ach-grid"></div>
-</section>
+<div class="progress">
 
-<section class="sec" id="s-planner">
-  <div class="stitle">3-Day Study Planner</div>
-  <div class="sdesc">Your personalised prep plan until March 19th</div>
-  <div id="pl-body"></div>
-</section>
+<div id="progressbar" class="progressbar"></div>
 
-    </main>
-  </div>
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Learning Path</h2>
+
+<button onclick="openDay(1)">Day 1 – Story Understanding</button>
+<button onclick="openDay(2)">Day 2 – Language Analysis</button>
+<button onclick="openDay(3)">Day 3 – Writing Analysis</button>
+
+</div>
+
+</div>
+
+<!-- DAY 1 -->
+
+<div id="day1" class="card hidden">
+
+<h2>Day 1 – Understanding The Story</h2>
+
+<h3>About the novel</h3>
+
+<p>
+The novel follows Jonas, a boy living in a highly controlled society.
+The community removed pain and strong emotions.
+Jonas becomes the Receiver of Memory.
+</p>
+
+<!-- MAIN IDEA QUIZ -->
+
+<div class="exercise">
+
+<h3>Main Idea</h3>
+
+<p>
+Why does the society remove memories?
+</p>
+
+<button onclick="mainidea('a')">To control people</button>
+<button onclick="mainidea('b')">To improve technology</button>
+<button onclick="mainidea('c')">To make people stronger</button>
+
+<p id="mainideaResult"></p>
+
+</div>
+
+<!-- CHARACTER MATCH -->
+
+<div class="exercise">
+
+<h3>Character Match</h3>
+
+<p>Who trains Jonas?</p>
+
+<button onclick="char('a')">The Giver</button>
+<button onclick="char('b')">The Chief Elder</button>
+<button onclick="char('c')">Asher</button>
+
+<p id="charResult"></p>
+
+</div>
+
+<!-- VOCAB -->
+
+<div class="exercise">
+
+<h3>Vocabulary</h3>
+
+<p>Translate: "community"</p>
+
+<input id="vocab">
+
+<button onclick="checkVocab()">Check</button>
+
+<p id="vocabResult"></p>
+
+</div>
+
+<button onclick="complete(1)">Complete Day 1</button>
+
+</div>
+
+<!-- DAY 2 -->
+
+<div id="day2" class="card hidden">
+
+<h2>Day 2 – Language and Analysis</h2>
+
+<div class="exercise">
+
+<h3>Symbolism</h3>
+
+<p>
+What does color symbolize in the novel?
+</p>
+
+<button onclick="symbol('a')">Emotion and truth</button>
+<button onclick="symbol('b')">Technology</button>
+<button onclick="symbol('c')">Food</button>
+
+<p id="symbolResult"></p>
+
+</div>
+
+<div class="exercise">
+
+<h3>Tone</h3>
+
+<p>
+The community seems calm but also disturbing.
+</p>
+
+<button onclick="tone('a')">Peaceful but artificial</button>
+<button onclick="tone('b')">Funny</button>
+<button onclick="tone('c')">Romantic</button>
+
+<p id="toneResult"></p>
+
+</div>
+
+<div class="exercise">
+
+<h3>Quote Analysis</h3>
+
+<p>
+"He felt something stir inside him."
+</p>
+
+<input id="quoteAnalysis">
+
+<button onclick="checkQuote()">Check</button>
+
+<p id="quoteResult"></p>
+
+</div>
+
+<button onclick="complete(2)">Complete Day 2</button>
+
+</div>
+
+<!-- DAY 3 -->
+
+<div id="day3" class="card hidden">
+
+<h2>Day 3 – Writing an Analysis</h2>
+
+<div class="exercise">
+
+<h3>Essay Structure</h3>
+
+<p>
+What comes first in an analysis?
+</p>
+
+<button onclick="structure('a')">Introduction</button>
+<button onclick="structure('b')">Example</button>
+<button onclick="structure('c')">Conclusion</button>
+
+<p id="structureResult"></p>
+
+</div>
+
+<div class="exercise">
+
+<h3>Write a Short Analysis</h3>
+
+<textarea id="essay" rows="8"></textarea>
+
+<button onclick="checkEssay()">Check Essay</button>
+
+<p id="essayResult"></p>
+
+</div>
+
+<button onclick="complete(3)">Finish Course</button>
+
+</div>
+
 </div>
 
 <script>
-const {createClient} = supabase;
-const sb = createClient('https://rgvhzonoydahgadrzpqj.supabase.co','sb_publishable_FZGhM9Fp-CcK5YpT9NSGqA_GQUZ3_Uz');
 
-// ─── STATE ───────────────────────────────────────
-let CU = null, UP = null, ACH = new Set(), emptyTries = 0;
+const supabase = window.supabase.createClient(
+"https://rgvhzonoydahgadrzpqj.supabase.co",
+"sb_publishable_FZGhM9Fp-CcK5YpT9NSGqA_GQUZ3_Uz"
+)
 
-// ─── DATA ────────────────────────────────────────
-const FC = [
-  {w:"Relinquish",t:"verb",d:"To give up or surrender a right, possession or claim.",c:'"Each family unit had to relinquish the newchild..."'},
-  {w:"Apprehensive",t:"adjective",d:"Anxious or fearful about a future event.",c:'"Jonas was beginning to feel apprehensive."'},
-  {w:"Palpable",t:"adjective",d:"So intense as to be almost physically felt; clearly perceptible.",c:'"The tension in the Auditorium was palpable."'},
-  {w:"Sinuous",t:"adjective",d:"Having many curves; lithe and graceful.",c:'"The river wound in a sinuous path beyond the Community."'},
-  {w:"Assuage",t:"verb",d:"To make an unpleasant feeling less intense; to soothe.",c:'"The Giver tried to assuage Jonas\'s grief with warmth."'},
-  {w:"Distraught",t:"adjective",d:"Very worried and deeply agitated; distressed.",c:'"Jonas became distraught after witnessing the release."'},
-  {w:"Buoyancy",t:"noun",d:"Lightness of spirit; cheerfulness and optimism.",c:'"He felt a buoyancy he had never known before."'},
-  {w:"Solace",t:"noun",d:"Comfort or consolation in a time of distress.",c:'"The memories provided solace in his growing isolation."'},
-  {w:"Anguish",t:"noun",d:"Severe mental or physical pain or suffering.",c:'"The anguish of the war memory overwhelmed him completely."'},
-  {w:"Tentative",t:"adjective",d:"Not certain or fixed; done without confidence; hesitant.",c:'"He took a tentative step toward the Annex door."'},
-  {w:"Serene",t:"adjective",d:"Calm, peaceful, and untroubled; tranquil.",c:'"The Giver\'s face was serene as he transmitted the memory."'},
-  {w:"Admonition",t:"noun",d:"A firm warning or cautionary advice.",c:'"The admonition against rudeness was strictly observed."'},
-  {w:"Permeate",t:"verb",d:"To spread throughout; to pervade completely.",c:'"A sense of dread began to permeate his thoughts."'},
-  {w:"Obsolete",t:"adjective",d:"No longer in use; out of date.",c:'"Books were considered obsolete in the Community."'},
-  {w:"Impede",t:"verb",d:"To delay or prevent by obstruction; to hinder.",c:'"The cold impeded his progress as he climbed the hill."'},
-  {w:"Transcribe",t:"verb",d:"To put thoughts or speech into written form.",c:'"He wished he could transcribe the memory of music."'},
-  {w:"Oblivious",t:"adjective",d:"Not aware of or concerned about what is happening around one.",c:'"The Community was oblivious to what Release truly meant."'},
-  {w:"Taut",t:"adjective",d:"Stretched or pulled tight; showing signs of strain.",c:'"His nerves were taut as he waited for the Ceremony."'},
-  {w:"Bewilderment",t:"noun",d:"A feeling of utter perplexity and confusion.",c:'"He stared in bewilderment at the color he could see."'},
-  {w:"Euphemism",t:"noun",d:"A mild or indirect word substituted for a harsh or blunt one.",c:'"Release" is the novel\'s central and most devastating euphemism.'}
-];
+let progress=0
 
-const SYMS = [
-  {ic:"🎨",nm:"Color",th:"Conformity · Individuality",tx:"Color represents the suppressed individuality and sensory richness sacrificed for Sameness. Jonas's growing ability to see color symbolizes his awakening consciousness — each flash of red or gold is a crack in the Community's control.",q:'"He saw the apple — and for just a moment, it changed."'},
-  {ic:"🛷",nm:"The Sled",th:"Freedom · Memory · Escape",tx:"The sled carries Jonas in his very first received memory — a symbol of pure joy, speed, and freedom. At the novel's end it reappears, linking the opening joy with the desperate final escape and suggesting that hope and danger are inseparable.",q:'"Moving through the cold air… it was the most pleasurable sensation Jonas had ever experienced."'},
-  {ic:"👁",nm:"Pale Eyes",th:"Identity · Depth · Connection",tx:"Jonas and Gabriel alone share pale, unusual eyes — marking them as those capable of holding memory and perceiving what others cannot. Their shared eye colour is a motif structurally linking their fates and symbolizing depth of perception beyond the Community's flat surface.",q:'"He had never seen his own eyes… but he knew the eyes were unusual, as his were."'},
-  {ic:"🍎",nm:"The Apple",th:"Awakening · Forbidden Knowledge",tx:"Like the biblical apple, this is the moment forbidden knowledge enters. The apple Jonas catches briefly flashes with color (red) — his 'Capacity to See Beyond' first manifests here. It marks the end of his innocence within the Community and the beginning of his growing separation.",q:'"The apple had… changed. Just for a moment. Then it was the same apple again."'},
-  {ic:"❄️",nm:"Snow & Cold",th:"Freedom · The Outside World",tx:"Snow was eliminated by the Community for agricultural convenience — it represents the world outside their control, beautiful but inconvenient, wild and free. The memory of sledding in snow is Jonas's first taste of authentic experience, making it both a symbol of joy and of what Sameness has stolen.",q:'"Climate control… no snow… it was all eliminated when we went to Sameness."'},
-  {ic:"📚",nm:"Memory",th:"Humanity · Wisdom · Pain · Love",tx:"Memory is the novel's central symbol. By erasing collective memory the Community eliminated pain — but also wisdom, joy, love, and moral judgment. The Giver and Jonas carry an unbearable weight, but also the only source of truly human experience. The novel argues: a life without memory is incomplete.",q:'"The worst part of holding the memories is not the pain. It\'s the loneliness of it."'}
-];
-
-const QUOTES = [
-  {tx:"The worst part of holding the memories is not the pain. It's the loneliness of it. Memories need to be shared.",sp:"The Giver",th:["Memory","Isolation"],dv:"Juxtaposition"},
-  {tx:"We gained control of many things. But we had to let go of others.",sp:"The Giver",th:["Conformity","Loss"],dv:"Parallelism / Antithesis"},
-  {tx:"Things could change, Gabe. Things could be different. I don't know how, but there must be some way.",sp:"Jonas",th:["Hope","Freedom"],dv:"Anaphora / Repetition"},
-  {tx:"It was almost December, and Jonas was beginning to feel frightened.",sp:"Narrator",th:["Foreshadowing","Apprehension"],dv:"Free Indirect Speech"},
-  {tx:"He killed it. My father killed it.",sp:"Jonas",th:["Death","Disillusionment"],dv:"Anaphora / Repetition"},
-  {tx:"I knew that you would be different. I could see it in your eyes.",sp:"The Giver",th:["Destiny","Difference"],dv:"Repetition"},
-  {tx:"There could be love.",sp:"Jonas",th:["Love","Emotion"],dv:"Understatement"},
-  {tx:"Precision of language, please.",sp:"Authority Figures",th:["Language Control","Conformity"],dv:"Verbal Irony / Euphemism"},
-  {tx:"Thank you for your childhood.",sp:"Jonas",th:["Gratitude","Sacrifice"],dv:"Dramatic Understatement"},
-  {tx:"For the first time, he heard something that he knew to be music. He heard people singing.",sp:"Narrator",th:["Hope","Freedom","Art"],dv:"Climactic Ending / Ambiguity"},
-  {tx:"Without the memories it's all meaningless. Food, family, music — everything.",sp:"Jonas",th:["Memory","Humanity"],dv:"Tricolon"},
-  {tx:"The community had achieved a kind of order, true. But also without sunshine, without color, without love.",sp:"Narrator (implied)",th:["Loss","Conformity"],dv:"Tricolon / Contrast"},
-  {tx:"He wept because he was afraid now that he could not save Gabe.",sp:"Narrator",th:["Love","Fear","Sacrifice"],dv:"Free Indirect Speech"},
-  {tx:"They had never been kept a family. Just a Receiver.",sp:"The Giver",th:["Isolation","Sacrifice"],dv:"Contrast / Parallelism"},
-  {tx:"The life where nothing was ever taken away.",sp:"Jonas (paraphrased)",th:["Memory","Loss","Elsewhere"],dv:"Idealisation"}
-];
-
-const EMOTIONS = [
-  {chs:"Ch. 1–5",tit:"Obedient Citizen",col:"#3d6fa3",desc:"Jonas is a dutiful, thoughtful member of the Community. He feels apprehension before the Ceremony but fundamentally accepts his world as ordered and correct. His emotional range is intentionally limited — he experiences only what the Community considers appropriate.",wds:["Apprehensive","Dutiful","Curious","Conforming","Accepting"]},
-  {chs:"Ch. 6–13",tit:"Awakening Wonder",col:"#c8a84b",desc:"Receiving memories of snow, sunshine, and color, Jonas experiences emotions the Community cannot name. He feels exhilaration and deep longing. The gap between his inner life and that of his peers begins to isolate him — he cannot share what he experiences.",wds:["Exhilarated","Awestruck","Confused","Isolated","Yearning"]},
-  {chs:"Ch. 14–19",tit:"Horror & Moral Rupture",col:"#8b2635",desc:"War, suffering, and the revelation that his father murdered the newchild twin creates a moral rupture. Jonas cannot reconcile the Community's pleasant surface with its violent reality. His grief is compounded by the knowledge that no one around him can feel what he feels.",wds:["Horrified","Disillusioned","Angry","Grief-stricken","Betrayed"]},
-  {chs:"Ch. 20–23",tit:"Determined Love",col:"#2a6b44",desc:"Love for Gabriel transforms Jonas's grief into resolve. He chooses action over safety, escaping with Gabriel despite mortal danger. His emotional world is now fully formed — he can feel love, fear, hope, and sacrifice in ways no other Community member can.",wds:["Determined","Loving","Fearful","Hopeful","Sacrificing"]}
-];
-
-const DQ = [
-  {id:"dq1",ps:"His father bent over the newchild, carefully positioning a syringe. 'Release is a celebration,' he murmured pleasantly.",q:"What literary device is most prominent?",opts:["Metaphor","Euphemism","Alliteration","Flashback"],c:1,ex:"Euphemism: 'Release' replaces 'death by injection' with a word of celebration. This is the novel's central linguistic device — the Community controls reality by controlling its name."},
-  {id:"dq2",ps:"It was almost December, and Jonas was beginning to feel frightened.",q:"This opening line demonstrates which narrative technique?",opts:["Third-person omniscient","Free indirect speech","First-person narration","Stream of consciousness"],c:1,ex:"Free indirect speech: 'beginning to feel frightened' voices Jonas's inner state without 'he thought' or quotation marks. The narrator merges with Jonas's perspective — we feel as if we are inside his mind."},
-  {id:"dq3",ps:"The apple Jonas had tossed into the air had — for just a moment — changed. He blinked. The apple was the same apple as before.",q:"This scene primarily functions as:",opts:["Metaphor","Verbal irony","Foreshadowing","Hyperbole"],c:2,ex:"Foreshadowing: The apple's change hints at Jonas's 'Capacity to See Beyond' — his ability to perceive color — before it is explained. The undefined mystery creates tension and anticipates the revelation about Sameness."},
-  {id:"dq4",ps:"'Precision of language, Jonas!' his father corrected him pleasantly.",q:"The Community's rule of 'Precision of Language' is itself an example of:",opts:["Symbolism","Simile","Irony and language control","Allusion"],c:2,ex:"Irony and language control: 'Precision' is demanded to enforce vagueness — words like 'starving' are banned for 'hungry.' The term weaponises the appearance of exactness to prevent emotional precision. A hallmark of totalitarian language."},
-  {id:"dq5",ps:"He killed it. My father killed it.",q:"Jonas's repetition here primarily creates:",opts:["Alliteration","Comic relief","Emotional emphasis through anaphora","Foreshadowing"],c:2,ex:"Anaphora / emotional repetition: The repetition of 'killed' and 'My father' mirrors Jonas's psychological shock. His mind circles the unbearable word — the word the Community forbids — unable to process what he has seen."},
-  {id:"dq6",ps:"The pale eyes of Jonas — and of the infant Gabriel — were unlike the dark, calm eyes of most Community members.",q:"The recurring motif of pale eyes primarily symbolizes:",opts:["A physical defect","The capacity for depth and perception beyond Sameness","Weakness","Old age"],c:1,ex:"Motif / Symbol: Pale eyes mark Jonas and Gabriel as those capable of holding memory and perceiving what others cannot. It is both a narrative device linking their fates and a symbolic marker of depth vs. the Community's flat surface."},
-  {id:"dq7",ps:"The reader understands that 'Release' means death long before Jonas does, creating sustained dread throughout the early chapters.",q:"This gap between reader and character knowledge is called:",opts:["Situational irony","Dramatic irony","Verbal irony","Cosmic irony"],c:1,ex:"Dramatic irony: The reader suspects what 'Release' truly means while Jonas does not. Every casual mention of release accumulates dread the reader feels but Jonas cannot, until Chapter 19."},
-  {id:"dq8",ps:"The sky above seemed to lower itself, pressing down upon him as he rode further from the Community.",q:"What device is used here?",opts:["Personification","Alliteration","Simile","Metaphor"],c:0,ex:"Personification: The sky is given a human action ('pressing down'), externalizing Jonas's psychological state — the oppressive weight of his decision. The natural world mirrors his interiority, intensifying the emotional atmosphere."},
-  {id:"dq9",ps:"Lowry ends the novel with Jonas hearing music and seeing lights ahead — without confirming whether he and Gabriel survive.",q:"This narrative choice is known as:",opts:["Cliffhanger","Open / ambiguous ending","Deus ex machina","Circular narrative"],c:1,ex:"Open / ambiguous ending: Are the lights and music a real village, or Jonas's dying hallucination? Lowry deliberately withholds resolution. The ambiguity serves the novel's themes — hope and survival remain uncertain, as they are in life."},
-  {id:"dq10",ps:"Early: 'The community was orderly, precise, and safe.' Later: 'He was not being kept. He was being used.'",q:"The tonal shift between these passages demonstrates:",opts:["A change of narrator","Collapsing narrative distance and developing irony","Flashback technique","Stream of consciousness"],c:1,ex:"Collapsing narrative distance: Early, the narrator adopts the Community's neutral vocabulary. Later, as Jonas's consciousness expands, the narrator's emotional engagement transforms — matching Jonas's awakening. This tonal arc is itself a major literary device."}
-];
-
-const TF = [
-  {id:"tf1",st:"Jonas is selected as Receiver of Memory at the Ceremony of Twelve.",a:true,ex:"TRUE — Jonas receives this rare, prestigious assignment instead of a standard role."},
-  {id:"tf2",st:"The Community experiences all four seasons, including snow.",a:false,ex:"FALSE — Climate was controlled and seasonal variation eliminated as part of Sameness."},
-  {id:"tf3",st:"Gabriel has pale eyes similar to Jonas.",a:true,ex:"TRUE — Gabriel shares Jonas's unusual pale eyes, linking them and foreshadowing his escape."},
-  {id:"tf4",st:"Jonas's father works as a Doctor.",a:false,ex:"FALSE — Jonas's father is a Nurturer, caring for newchildren at the Nurturing Center."},
-  {id:"tf5",st:"'Release' is a euphemism for death by lethal injection.",a:true,ex:"TRUE — Jonas discovers this in Chapter 19 when The Giver shows him the recording of his father."},
-  {id:"tf6",st:"Fiona is assigned to care for the elderly.",a:true,ex:"TRUE — Fiona becomes a Caretaker of the Old — which Jonas realises is significant, as the Old are also Released."},
-  {id:"tf7",st:"All Community members are able to see color.",a:false,ex:"FALSE — Sameness eliminated color perception in most members. Only Jonas (and Gabriel) retain this ability."},
-  {id:"tf8",st:"Jonas steals Gabriel and flees the Community on a bicycle.",a:true,ex:"TRUE — Jonas takes Gabriel from the Nurturing Center and they flee by bicycle."},
-  {id:"tf9",st:"Asher is assigned as Assistant Director of Recreation.",a:true,ex:"TRUE — Asher, Jonas's best friend, receives this assignment at the Ceremony."},
-  {id:"tf10",st:"The Giver's daughter Rosemary was the previous Receiver of Memory.",a:true,ex:"TRUE — Rosemary was The Giver's daughter; she requested Release after receiving unbearable memories of loss."},
-  {id:"tf11",st:"The novel is narrated in first person from Jonas's perspective.",a:false,ex:"FALSE — The novel uses third-person limited narration — external narrator, restricted to Jonas's perspective."},
-  {id:"tf12",st:"Music, art, and creative expression have been eliminated by Sameness.",a:true,ex:"TRUE — Sameness removed music, art, and individual creative expression to achieve social harmony."},
-  {id:"tf13",st:"The Giver shows Jonas the Release via a video recording.",a:true,ex:"TRUE — The Giver plays a recording for Jonas in Chapter 19, forcing him to witness his father's act."},
-  {id:"tf14",st:"The Community's Chief Elder assigns each citizen their life role.",a:true,ex:"TRUE — The Chief Elder announces Assignments at the Ceremony after observation by the Committee of Elders."},
-  {id:"tf15",st:"Jonas's father was aware that Release means death.",a:true,ex:"TRUE — Jonas's father knows exactly what Release entails; his calm demeanour during it represents the novel's deepest moral horror."}
-];
-
-const AQ = [
-  {id:"aq1",q:"The worst part of holding the memories is not the pain. It's the loneliness of it.",opts:["Jonas","The Giver","Chief Elder","Rosemary"],c:1,ex:"The Giver — explaining to Jonas why memories must be shared and why the Receiver's role is so isolating."},
-  {id:"aq2",q:"Things could change, Gabe. Things could be different. I don't know how, but there must be some way.",opts:["The Giver","Jonas's Father","Jonas","Chief Elder"],c:2,ex:"Jonas — spoken to Gabriel during their escape. It reveals Jonas's developing hope and determination despite uncertainty."},
-  {id:"aq3",q:"We gained control of many things. But we had to let go of others.",opts:["The Giver","Jonas","Chief Elder","Jonas's Mother"],c:0,ex:"The Giver — explaining the Faustian bargain: Sameness brought order at the cost of love, color, music, and freedom."},
-  {id:"aq4",q:"He killed it. My father killed it.",opts:["The Giver","Gabriel","Jonas","Lily"],c:2,ex:"Jonas — his internal reaction after watching the recording of his father releasing the newchild twin. Anaphora enacts his shock."},
-  {id:"aq5",q:"There could be love.",opts:["The Giver","Jonas's Mother","Jonas","Fiona"],c:2,ex:"Jonas — responding to his parents' dismissal of 'love' as 'imprecise'. The line captures his longing for the emotional world the Community has forbidden."},
-  {id:"aq6",q:"Precision of language, please.",opts:["The Giver","Chief Elder","Jonas's Father","Multiple authority figures"],c:3,ex:"Multiple authority figures — including Jonas's parents. It is the Community's phrase for policing emotional vocabulary. Deeply ironic."},
-  {id:"aq7",q:"I knew that you would be different. I could see it in your eyes.",opts:["Jonas's Mother","Chief Elder","The Giver","Fiona"],c:2,ex:"The Giver — referring to Jonas's pale eyes, which mark his capacity to receive memory. He recognized Jonas's potential early."},
-  {id:"aq8",q:"Thank you for your childhood.",opts:["Jonas to his parents","Jonas to The Giver","The Giver to Jonas","Chief Elder to Jonas"],c:1,ex:"Jonas to The Giver — acknowledging that The Giver gave him something the Community could not: a full, feeling, human life."},
-  {id:"aq9",q:"For the first time, he heard something that he knew to be music. He heard people singing.",opts:["Final lines of narration","The Giver to Jonas","Jonas's internal thought","A memory transmitted by The Giver"],c:0,ex:"Final lines of narration — deliberately ambiguous. Is this a real village, or Jonas's dying hallucination? The open ending is Lowry's most important narrative choice."},
-  {id:"aq10",q:"Without the memories it's all meaningless — food, family, everything.",opts:["The Giver","Jonas","Rosemary (implied)","Jonas's Father"],c:1,ex:"Jonas — the novel's central philosophical insight: without memory and emotion, even basic human experiences lose meaning. This is what Sameness has stolen."}
-];
-
-const FB = [
-  {id:"fb1",b:"It was almost December, and Jonas was beginning to feel",blank:"frightened",a:".",hint:"The opening word — Jonas's emotional state on the first page",ex:"'Frightened' — free indirect speech voices Jonas's inner state without attribution. The word signals that this orderly Community produces anxiety, not just safety."},
-  {id:"fb2",b:"The worst part of holding the memories is not the pain. It's the",blank:"loneliness",a:"of it.",hint:"What The Giver identifies as the true burden of memory",ex:"'Loneliness' — The Giver's most important revelation. Memory requires connection; the Receiver's isolation is the Community's deepest cruelty."},
-  {id:"fb3",b:"We gained",blank:"control",a:"of many things. But we had to let go of others.",hint:"What the Community achieved through Sameness",ex:"'Control' — The Giver summarises the Faustian bargain: safety and order at the price of freedom, color, love, and humanity."},
-  {id:"fb4",b:"He killed it. My father",blank:"killed",a:"it.",hint:"Jonas's repeated word showing his psychological shock — anaphora",ex:"'Killed' — the word the Community forbids. Anaphora enacts Jonas's disbelief — his mind circles back to the unbearable truth, unable to absorb it."},
-  {id:"fb5",b:"There could be",blank:"love",a:".",hint:"The forbidden word Jonas uses — declared 'imprecise' by the Community",ex:"'Love' — a word the Community has declared obsolete. Jonas's use of it marks his complete break from Community values."},
-  {id:"fb6",b:"'Release' in the Community is a",blank:"euphemism",a:"for death.",hint:"The literary term for replacing a harsh word with a pleasant one",ex:"'Euphemism' — the substitution of an innocuous word for a brutal reality. 'Release' is the novel's central and most devastating euphemism."},
-  {id:"fb7",b:"Jonas and Gabriel both have unusual",blank:"pale",a:"eyes, unlike most other Community members.",hint:"The adjective describing their shared physical feature",ex:"'Pale' — their shared eye colour is a motif linking them as those capable of receiving and transmitting memory."},
-  {id:"fb8",b:"The novel uses",blank:"third-person limited",a:"narration, restricting the reader's perspective to Jonas's developing consciousness.",hint:"The technical name for the novel's narrative perspective",ex:"'Third-person limited' — the narrator is external but restricted to Jonas's perception. The key technical term for analytical essays."}
-];
-
-const ACHDEFS = [
-  {id:"first_login",ic:"🌅",nm:"First Memory",desc:"Logged in for the first time"},
-  {id:"streak_3",ic:"🔥",nm:"Memory Keeper",desc:"Achieved a 3-day study streak"},
-  {id:"flashcard_all",ic:"📚",nm:"Word Receiver",desc:"Revealed all 20 flashcard definitions"},
-  {id:"quiz_perfect",ic:"⭐",nm:"Precise Analyst",desc:"Scored 10/10 on Stylistic Devices"},
-  {id:"tf_perfect",ic:"✓",nm:"Plot Master",desc:"Scored 15/15 on True/False"},
-  {id:"xp_100",ic:"💛",nm:"Memory Transmitter",desc:"Reached 100 XP"},
-  {id:"xp_500",ic:"🏆",nm:"The Giver",desc:"Reached 500 XP"},
-  {id:"level_3",ic:"🎖️",nm:"Receiver of Memory",desc:"Reached Level 3"},
-  {id:"all_quotes",ic:"❝",nm:"Quote Scholar",desc:"Explored all quote categories"},
-  {id:"weak_cleared",ic:"🎯",nm:"No Weak Spots",desc:"Cleared all weak spot entries"}
-];
-
-const LEVELS = [
-  {lv:1,nm:"Citizen",min:0},
-  {lv:2,nm:"Eleven",min:100},
-  {lv:3,nm:"Receiver",min:250},
-  {lv:4,nm:"Memory Holder",min:500},
-  {lv:5,nm:"The Giver",min:900}
-];
-
-// ─── UTILS ───────────────────────────────────────
-async function hashPW(pw) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-function toast(msg, ms=3000) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), ms);
-}
-function lvlInfo(xp) {
-  let cur = LEVELS[0];
-  for (const l of LEVELS) if (xp >= l.min) cur = l;
-  const idx = LEVELS.indexOf(cur);
-  const nxt = LEVELS[idx+1];
-  const pct = nxt ? ((xp-cur.min)/(nxt.min-cur.min))*100 : 100;
-  return {...cur, pct, nextXP: nxt ? nxt.min : null};
-}
-function updSidebar() {
-  if (!UP) return;
-  const {lv, nm, pct, nextXP} = lvlInfo(UP.xp);
-  document.getElementById('lvl-lbl').textContent = `Level ${lv} · ${nm}`;
-  document.getElementById('xp-lbl').textContent = `${UP.xp}${nextXP ? ` / ${nextXP} XP` : ' XP'}`;
-  document.getElementById('xp-bar').style.width = pct + '%';
-  document.getElementById('streak-n').textContent = UP.streak_count || 0;
-  document.getElementById('d-xp').textContent = UP.xp;
-  document.getElementById('d-str').textContent = UP.streak_count || 0;
-}
-function today() { return new Date().toISOString().split('T')[0]; }
-
-// ─── SUPABASE ─────────────────────────────────────
-async function dbUser(username) { const {data} = await sb.from('users').select('*').eq('username',username).single(); return data; }
-async function dbCreateUser(username, hash) { return await sb.from('users').insert({username, password_hash:hash}).select().single(); }
-async function dbProgress(uid) { const {data} = await sb.from('user_progress').select('*').eq('user_id',uid).single(); return data; }
-async function dbMkProgress(uid) { const {data} = await sb.from('user_progress').insert({user_id:uid,xp:0,level:1,streak_count:0,last_active:today()}).select().single(); return data; }
-async function dbUpdProgress(uid, u) { await sb.from('user_progress').update(u).eq('user_id',uid); }
-async function dbSaveResult(uid, type, score, total) { await sb.from('quiz_results').insert({user_id:uid,quiz_type:type,score,total}); }
-async function dbResults(uid) { const {data} = await sb.from('quiz_results').select('*').eq('user_id',uid).order('created_at',{ascending:false}).limit(6); return data||[]; }
-async function dbWeakSpots(uid) { const {data} = await sb.from('weak_spots').select('*').eq('user_id',uid).order('wrong_count',{ascending:false}); return data||[]; }
-async function dbAddWeak(uid, qid, type) {
-  const {data} = await sb.from('weak_spots').select('*').eq('user_id',uid).eq('question_id',qid).single();
-  if (data) await sb.from('weak_spots').update({wrong_count:data.wrong_count+1,last_wrong:new Date().toISOString()}).eq('id',data.id);
-  else await sb.from('weak_spots').insert({user_id:uid,question_id:qid,quiz_type:type,wrong_count:1});
-}
-async function dbGetAch(uid) { const {data} = await sb.from('achievements').select('*').eq('user_id',uid); return (data||[]).map(a => a.badge_name); }
-async function dbAddAch(uid, name) {
-  if (ACH.has(name)) return;
-  await sb.from('achievements').insert({user_id:uid,badge_name:name});
-  ACH.add(name);
-  const d = ACHDEFS.find(a => a.id === name);
-  if (d) toast(`🏆 Achievement: ${d.nm}!`);
-  document.getElementById('d-bdg').textContent = ACH.size;
+function showRegister(){
+loginCard.classList.add("hidden")
+registerCard.classList.remove("hidden")
 }
 
-// ─── XP ──────────────────────────────────────────
-async function addXP(amt) {
-  if (!CU || !UP) return;
-  UP.xp = (UP.xp || 0) + amt;
-  const {lv} = lvlInfo(UP.xp);
-  UP.level = lv;
-  if (lv >= 3) await dbAddAch(CU.id, 'level_3');
-  if (UP.xp >= 100) await dbAddAch(CU.id, 'xp_100');
-  if (UP.xp >= 500) await dbAddAch(CU.id, 'xp_500');
-  await dbUpdProgress(CU.id, {xp:UP.xp, level:UP.level});
-  updSidebar();
-  toast(`+${amt} XP ✦`);
+function showLogin(){
+registerCard.classList.add("hidden")
+loginCard.classList.remove("hidden")
 }
 
-// ─── STREAK ──────────────────────────────────────
-async function checkStreak() {
-  if (!CU || !UP) return;
-  const t = today();
-  const last = UP.last_active;
-  if (last === t) return;
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yStr = yesterday.toISOString().split('T')[0];
-  const streak = last === yStr ? (UP.streak_count || 0) + 1 : 1;
-  UP.streak_count = streak;
-  UP.last_active = t;
-  await dbUpdProgress(CU.id, {streak_count:streak, last_active:t});
-  if (streak >= 3) await dbAddAch(CU.id, 'streak_3');
-  updSidebar();
+async function register(){
+
+const {error} = await supabase.auth.signUp({
+email:regEmail.value,
+password:regPass.value
+})
+
+regMsg.innerText = error?error.message:"Account created"
+
 }
 
-// ─── AUTH ─────────────────────────────────────────
-function switchTab(t) {
-  document.getElementById('lf').style.display = t === 'login' ? 'block' : 'none';
-  document.getElementById('rf').style.display = t === 'register' ? 'block' : 'none';
-  document.querySelectorAll('.auth-tab').forEach((btn, i) => {
-    btn.classList.toggle('active', (t==='login'&&i===0)||(t==='register'&&i===1));
-  });
+async function login(){
+
+const {error} = await supabase.auth.signInWithPassword({
+email:email.value,
+password:password.value
+})
+
+if(error){
+loginMsg.innerText=error.message
+return
 }
 
-async function handleLogin() {
-  const u = document.getElementById('lu').value.trim();
-  const p = document.getElementById('lp').value.trim();
-  const msg = document.getElementById('lmsg');
-  if (!u && !p) {
-    emptyTries++;
-    if (emptyTries >= 5) {
-      msg.className = 'amsg';
-      msg.textContent = '🔑 Loading test account...';
-      await loginAs('testuser', 'test1234', true);
-      return;
-    }
-    const left = 5 - emptyTries;
-    msg.className = 'amsg';
-    msg.textContent = `Press ${left} more time${left !== 1 ? 's' : ''} to enter as test user`;
-    return;
-  }
-  emptyTries = 0;
-  if (!u || !p) { msg.className = 'amsg err'; msg.textContent = 'Please fill in all fields.'; return; }
-  msg.className = 'amsg'; msg.textContent = 'Entering Community...';
-  await loginAs(u, p, false);
+loginCard.classList.add("hidden")
+dashboard.classList.remove("hidden")
+
 }
 
-async function loginAs(username, password, isTest) {
-  const msg = document.getElementById('lmsg');
-  try {
-    const hash = await hashPW(password);
-    let user = await dbUser(username);
-    if (isTest && !user) {
-      const {data, error} = await dbCreateUser(username, hash);
-      if (error) { msg.className = 'amsg err'; msg.textContent = 'Test account unavailable.'; return; }
-      user = data;
-    }
-    if (!user) { msg.className = 'amsg err'; msg.textContent = 'Username not found.'; return; }
-    if (user.password_hash !== hash) { msg.className = 'amsg err'; msg.textContent = 'Incorrect password.'; return; }
-    CU = user;
-    let prog = await dbProgress(user.id);
-    if (!prog) prog = await dbMkProgress(user.id);
-    UP = prog;
-    const achNames = await dbGetAch(user.id);
-    ACH = new Set(achNames);
-    await checkStreak();
-    await dbAddAch(user.id, 'first_login');
-    document.getElementById('sb-user').textContent = CU.username;
-    updSidebar();
-    document.getElementById('d-bdg').textContent = ACH.size;
-    document.getElementById('auth').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    initApp();
-  } catch(e) {
-    msg.className = 'amsg err';
-    msg.textContent = 'Connection error — check your network.';
-    console.error(e);
-  }
+function openDay(d){
+
+day1.classList.add("hidden")
+day2.classList.add("hidden")
+day3.classList.add("hidden")
+
+document.getElementById("day"+d).classList.remove("hidden")
+
 }
 
-async function handleRegister() {
-  const u = document.getElementById('ru').value.trim();
-  const p = document.getElementById('rp').value.trim();
-  const msg = document.getElementById('rmsg');
-  if (!u || !p) { msg.className = 'amsg err'; msg.textContent = 'Fill in all fields.'; return; }
-  if (p.length < 4) { msg.className = 'amsg err'; msg.textContent = 'Password must be at least 4 characters.'; return; }
-  if (u.length < 3) { msg.className = 'amsg err'; msg.textContent = 'Username must be at least 3 characters.'; return; }
-  msg.className = 'amsg'; msg.textContent = 'Creating account...';
-  try {
-    const existing = await dbUser(u);
-    if (existing) { msg.className = 'amsg err'; msg.textContent = 'Username already taken.'; return; }
-    const hash = await hashPW(p);
-    const {data, error} = await dbCreateUser(u, hash);
-    if (error) { msg.className = 'amsg err'; msg.textContent = 'Registration failed. Try again.'; return; }
-    msg.className = 'amsg ok'; msg.textContent = '✓ Account created! You can now log in.';
-    document.getElementById('ru').value = ''; document.getElementById('rp').value = '';
-    setTimeout(() => switchTab('login'), 1400);
-  } catch(e) { msg.className = 'amsg err'; msg.textContent = 'Connection error.'; }
+function mainidea(a){
+
+mainideaResult.innerText =
+a==="a" ? "Correct" : "Think again"
+
 }
 
-function logout() {
-  CU = null; UP = null; ACH = new Set(); emptyTries = 0;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('auth').style.display = 'flex';
-  document.getElementById('lu').value = ''; document.getElementById('lp').value = '';
-  document.getElementById('lmsg').textContent = '';
+function char(a){
+
+charResult.innerText =
+a==="a" ? "Correct" : "Wrong"
+
 }
 
-// ─── NAV ──────────────────────────────────────────
-function nav(sec, el) {
-  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
-  document.getElementById('s-' + sec).classList.add('active');
-  el.classList.add('active');
-  const renders = {
-    symbols: renderSymbols,
-    quotes: () => renderQuotes('all'),
-    emotions: renderEmotions,
-    flashcards: initFlashcards,
-    devices: initDevicesQuiz,
-    blanks: initFillBlank,
-    attribution: initAttrQuiz,
-    truefalse: initTF,
-    weakspots: loadWeakSpots,
-    achievements: renderAchievements,
-    planner: renderPlanner,
-    dashboard: renderDashboard
-  };
-  if (renders[sec]) renders[sec]();
+function checkVocab(){
+
+vocabResult.innerText =
+vocab.value.toLowerCase()=="gemeinschaft"
+? "Correct"
+: "Not quite"
+
 }
 
-// ─── DASHBOARD ────────────────────────────────────
-async function renderDashboard() {
-  const exam = new Date('2026-03-19T08:00:00');
-  const now = new Date();
-  const diff = Math.ceil((exam - now) / (1000*60*60*24));
-  document.getElementById('cd-days').textContent = diff > 0 ? diff : '📝';
-  document.getElementById('cd-sub').textContent = diff > 1 ? `days until your exam on March 19th` : diff === 1 ? 'Tomorrow is the exam — you are ready!' : 'Exam day — show what you know!';
-  const results = await dbResults(CU.id);
-  const el = document.getElementById('d-results');
-  if (!results.length) { el.innerHTML = '<p style="font-size:.8rem;color:var(--dim)">No quizzes yet — start practicing!</p>'; return; }
-  el.innerHTML = results.map(r =>
-    `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:.8rem">
-      <span style="color:var(--text)">${r.quiz_type}</span>
-      <span style="color:var(--gold);font-family:'JetBrains Mono',monospace">${r.score}/${r.total}</span>
-      <span style="color:var(--dim);font-size:.7rem">${new Date(r.created_at).toLocaleDateString('en-GB')}</span>
-    </div>`
-  ).join('');
+function symbol(a){
+
+symbolResult.innerText =
+a==="a" ? "Correct" : "Try again"
+
 }
 
-// ─── SYMBOLS ──────────────────────────────────────
-function renderSymbols() {
-  document.getElementById('sym-grid').innerHTML = SYMS.map(s =>
-    `<div class="sym">
-      <div class="sym-ic">${s.ic}</div>
-      <div class="sym-nm">${s.nm}</div>
-      <div class="sym-th">${s.th}</div>
-      <div class="sym-tx">${s.tx}</div>
-      <div class="sym-q">"${s.q}"</div>
-    </div>`
-  ).join('');
+function tone(a){
+
+toneResult.innerText =
+a==="a" ? "Correct" : "Wrong"
+
 }
 
-// ─── QUOTES ───────────────────────────────────────
-let qFilter = 'all';
-const qTags = ['all','Memory','Freedom','Conformity','Loss','Hope','Love','Death','Language Control','Isolation','Sacrifice','Foreshadowing'];
-let _qViewed = new Set();
+function checkQuote(){
 
-function renderQuotes(f) {
-  qFilter = f;
-  document.getElementById('q-filters').innerHTML = qTags.map(t =>
-    `<button class="qf-btn${t===f?' active':''}" onclick="renderQuotes('${t}')">${t}</button>`
-  ).join('');
-  const list = f === 'all' ? QUOTES : QUOTES.filter(q => q.th.includes(f));
-  document.getElementById('q-list').innerHTML = list.length
-    ? list.map(q =>
-        `<div class="qi">
-          <div class="qi-txt">"${q.tx}"</div>
-          <div class="qi-meta">
-            <span class="qi-spk">${q.sp}</span>
-            ${q.th.map(t=>`<span class="qi-tag">${t}</span>`).join('')}
-            <span class="qi-dev">${q.dv}</span>
-          </div>
-        </div>`
-      ).join('')
-    : '<p style="font-size:.8rem;color:var(--dim)">No quotes in this category yet.</p>';
-  _qViewed.add(f);
-  if (qTags.every(t => _qViewed.has(t))) dbAddAch(CU.id, 'all_quotes');
+if(quoteAnalysis.value.length>20)
+quoteResult.innerText="Good analysis"
+
+else
+quoteResult.innerText="Write more"
+
 }
 
-// ─── EMOTIONS ─────────────────────────────────────
-function renderEmotions() {
-  document.getElementById('emo-tl').innerHTML = EMOTIONS.map(e =>
-    `<div class="emo-ph">
-      <div class="emo-dot" style="background:${e.col}"></div>
-      <div class="emo-chs">${e.chs}</div>
-      <div class="emo-tit" style="color:${e.col}">${e.tit}</div>
-      <div class="emo-desc">${e.desc}</div>
-      <div class="emo-wds">${e.wds.map(w=>`<span class="emo-w">${w}</span>`).join('')}</div>
-    </div>`
-  ).join('');
+function structure(a){
+
+structureResult.innerText =
+a==="a" ? "Correct" : "Wrong"
+
 }
 
-// ─── FLASHCARDS ───────────────────────────────────
-let fcIdx = 0, fcFlipped = false, fcArr = [...FC], fcRevealed = new Set();
+function checkEssay(){
 
-function initFlashcards() {
-  if (!fcArr.length) fcArr = [...FC];
-  fcIdx = 0; fcFlipped = false;
-  renderCard();
-}
-function renderCard() {
-  const c = fcArr[fcIdx];
-  document.getElementById('fc').classList.remove('flip');
-  fcFlipped = false;
-  document.getElementById('fc-w').textContent = c.w;
-  document.getElementById('fc-t').textContent = c.t;
-  document.getElementById('fc-d').textContent = c.d;
-  document.getElementById('fc-c').textContent = c.c;
-  document.getElementById('fc-ctr').textContent = `${fcIdx+1} / ${fcArr.length}`;
-}
-function flipCard() {
-  fcFlipped = !fcFlipped;
-  document.getElementById('fc').classList.toggle('flip', fcFlipped);
-  if (fcFlipped && !fcRevealed.has(fcArr[fcIdx].w)) {
-    fcRevealed.add(fcArr[fcIdx].w);
-    addXP(5);
-    if (fcRevealed.size === FC.length) dbAddAch(CU.id, 'flashcard_all');
-  }
-}
-function fcNext() { fcIdx = (fcIdx+1) % fcArr.length; renderCard(); }
-function fcPrev() { fcIdx = (fcIdx-1+fcArr.length) % fcArr.length; renderCard(); }
-function fcShuffle() { fcArr.sort(() => Math.random()-.5); fcIdx = 0; renderCard(); toast('⇄ Cards shuffled!'); }
+if(essay.value.length>120)
+essayResult.innerText="Good EF-level paragraph"
 
-// ─── DEVICES QUIZ ─────────────────────────────────
-let dqState = {};
+else
+essayResult.innerText="Write more detail"
 
-function initDevicesQuiz() {
-  dqState = {qs:[...DQ].sort(()=>Math.random()-.5).slice(0,10), cur:0, score:0};
-  renderDQ();
-}
-function renderDQ() {
-  const {qs, cur, score} = dqState;
-  document.getElementById('dq-pf').style.width = `${(cur/qs.length)*100}%`;
-  document.getElementById('dq-sc').textContent = `${cur}/${qs.length}`;
-  if (cur >= qs.length) {
-    const pct = Math.round(score/qs.length*100);
-    document.getElementById('dq-body').innerHTML =
-      `<div class="res">
-        <div class="res-score">${score}/${qs.length}</div>
-        <div class="res-lbl">${pct>=80?'Exceptional analytical precision!':pct>=60?'Good — review the explanations below.':'Keep practising — focus on the techniques.'}</div>
-        <div class="xp-pill">+${score*10} XP earned</div>
-        <br><button class="btn-g" onclick="initDevicesQuiz()">Try Again ↺</button>
-      </div>`;
-    document.getElementById('dq-pf').style.width = '100%';
-    document.getElementById('dq-sc').textContent = `${score}/${qs.length}`;
-    dbSaveResult(CU.id, 'Stylistic Devices', score, qs.length);
-    if (score === qs.length) dbAddAch(CU.id, 'quiz_perfect');
-    return;
-  }
-  const q = qs[cur];
-  document.getElementById('dq-body').innerHTML =
-    `<div class="q-passage">"${q.ps}"</div>
-    <div class="q-question">${q.q}</div>
-    <div class="q-opts" id="dq-opts">
-      ${q.opts.map((o,i)=>`<button class="q-opt" onclick="answerDQ(${i})">${o}</button>`).join('')}
-    </div>
-    <div class="q-fb" id="dq-fb"></div>
-    <button class="btn-g" id="dq-next" style="display:none;margin-top:10px" onclick="nextDQ()">Next →</button>`;
-}
-function answerDQ(i) {
-  const q = dqState.qs[dqState.cur];
-  const opts = document.querySelectorAll('#dq-opts .q-opt');
-  opts.forEach(o => o.disabled = true);
-  const fb = document.getElementById('dq-fb');
-  if (i === q.c) {
-    opts[i].classList.add('correct');
-    dqState.score++;
-    addXP(10);
-    fb.className = 'q-fb correct show'; fb.textContent = '✓ Correct — ' + q.ex;
-  } else {
-    opts[i].classList.add('wrong');
-    opts[q.c].classList.add('correct');
-    dbAddWeak(CU.id, q.id, 'Stylistic Devices');
-    fb.className = 'q-fb wrong show'; fb.textContent = '✗ ' + q.ex;
-  }
-  document.getElementById('dq-next').style.display = 'inline-block';
-}
-function nextDQ() { dqState.cur++; renderDQ(); }
-
-// ─── FILL BLANK ───────────────────────────────────
-let fbIdx = 0, fbDone = new Set();
-
-function initFillBlank() { fbIdx = 0; fbDone.clear(); renderFB(); }
-function renderFB() {
-  if (fbIdx >= FB.length) {
-    document.getElementById('fb-card').innerHTML =
-      `<div class="res">
-        <div class="res-score">${fbDone.size}/${FB.length}</div>
-        <div class="res-lbl">Fill in the Blank complete!</div>
-        <div class="xp-pill">+${fbDone.size*8} XP earned</div>
-        <br><button class="btn-g" onclick="initFillBlank()">Try Again ↺</button>
-      </div>`;
-    dbSaveResult(CU.id, 'Fill in the Blank', fbDone.size, FB.length);
-    return;
-  }
-  const q = FB[fbIdx];
-  document.getElementById('fb-card').innerHTML =
-    `<div class="ctitle">Question ${fbIdx+1} of ${FB.length}</div>
-    <p style="font-size:.7rem;color:var(--dim);margin-bottom:10px">💡 Hint: ${q.hint}</p>
-    <div class="fb-wrap">${q.b} <input class="fb-in" id="fb-inp" placeholder="______" onkeydown="if(event.key==='Enter')checkFB()"> ${q.a}</div>
-    <div style="display:flex;gap:9px;align-items:center">
-      <button class="btn-g" onclick="checkFB()">Check ✓</button>
-      <button class="btn-g" onclick="skipFB()">Skip →</button>
-    </div>
-    <div id="fb-fb" style="margin-top:10px"></div>`;
-  setTimeout(() => { const el = document.getElementById('fb-inp'); if (el) el.focus(); }, 50);
-}
-function checkFB() {
-  const q = FB[fbIdx];
-  const v = (document.getElementById('fb-inp').value || '').trim().toLowerCase();
-  const fb = document.getElementById('fb-fb');
-  if (v === q.blank.toLowerCase()) {
-    fb.innerHTML = `<div class="q-fb correct show">✓ Correct! ${q.ex}</div>`;
-    if (!fbDone.has(fbIdx)) { fbDone.add(fbIdx); addXP(8); }
-    setTimeout(() => { fbIdx++; renderFB(); }, 1800);
-  } else {
-    fb.innerHTML = `<div class="q-fb wrong show">✗ Not quite — think about: ${q.hint}</div>`;
-    dbAddWeak(CU.id, q.id, 'Fill in the Blank');
-  }
-}
-function skipFB() { fbIdx++; renderFB(); }
-
-// ─── ATTRIBUTION QUIZ ─────────────────────────────
-let aqState = {};
-
-function initAttrQuiz() {
-  aqState = {qs:[...AQ].sort(()=>Math.random()-.5).slice(0,10), cur:0, score:0};
-  renderAQ();
-}
-function renderAQ() {
-  const {qs, cur, score} = aqState;
-  document.getElementById('aq-pf').style.width = `${(cur/qs.length)*100}%`;
-  document.getElementById('aq-sc').textContent = `${cur}/${qs.length}`;
-  if (cur >= qs.length) {
-    document.getElementById('aq-body').innerHTML =
-      `<div class="res">
-        <div class="res-score">${score}/${qs.length}</div>
-        <div class="res-lbl">${score>=8?'Quote master!':score>=5?'Good — review the speakers.':'Focus on who says what and in what context.'}</div>
-        <div class="xp-pill">+${score*10} XP earned</div>
-        <br><button class="btn-g" onclick="initAttrQuiz()">Try Again ↺</button>
-      </div>`;
-    dbSaveResult(CU.id, 'Quote Attribution', score, qs.length);
-    return;
-  }
-  const q = qs[cur];
-  document.getElementById('aq-body').innerHTML =
-    `<div class="q-passage">"${q.q}"</div>
-    <div class="q-question">Who said this, and in what context?</div>
-    <div class="q-opts" id="aq-opts">
-      ${q.opts.map((o,i)=>`<button class="q-opt" onclick="answerAQ(${i})">${o}</button>`).join('')}
-    </div>
-    <div class="q-fb" id="aq-fb"></div>
-    <button class="btn-g" id="aq-next" style="display:none;margin-top:10px" onclick="nextAQ()">Next →</button>`;
-}
-function answerAQ(i) {
-  const q = aqState.qs[aqState.cur];
-  const opts = document.querySelectorAll('#aq-opts .q-opt');
-  opts.forEach(o => o.disabled = true);
-  const fb = document.getElementById('aq-fb');
-  if (i === q.c) {
-    opts[i].classList.add('correct');
-    aqState.score++; addXP(10);
-    fb.className = 'q-fb correct show'; fb.textContent = '✓ ' + q.ex;
-  } else {
-    opts[i].classList.add('wrong');
-    opts[q.c].classList.add('correct');
-    dbAddWeak(CU.id, q.id, 'Quote Attribution');
-    fb.className = 'q-fb wrong show'; fb.textContent = '✗ ' + q.ex;
-  }
-  document.getElementById('aq-next').style.display = 'inline-block';
-}
-function nextAQ() { aqState.cur++; renderAQ(); }
-
-// ─── TRUE / FALSE ─────────────────────────────────
-let tfState = {};
-
-function initTF() {
-  tfState = {qs:[...TF].sort(()=>Math.random()-.5), cur:0, score:0};
-  renderTFQ();
-}
-function renderTFQ() {
-  const {qs, cur, score} = tfState;
-  if (cur >= qs.length) {
-    document.getElementById('tf-card').innerHTML =
-      `<div class="res">
-        <div class="res-score">${score}/${qs.length}</div>
-        <div class="res-lbl">${score>=13?'Exceptional plot knowledge!':score>=9?'Solid — review the ones you missed.':'Revisit the chapter summaries and try again.'}</div>
-        <div class="xp-pill">+${score*5} XP earned</div>
-        <br><button class="btn-g" onclick="initTF()">Try Again ↺</button>
-      </div>`;
-    dbSaveResult(CU.id, 'True/False', score, qs.length);
-    if (score === qs.length) dbAddAch(CU.id, 'tf_perfect');
-    return;
-  }
-  const q = qs[cur];
-  document.getElementById('tf-card').innerHTML =
-    `<div class="q-prog"><div class="q-pb"><div class="q-pf" style="width:${(cur/qs.length)*100}%"></div></div><span class="q-sc">${cur}/${qs.length}</span></div>
-    <div class="q-question" style="font-size:.95rem;margin:16px 0 2px">${q.st}</div>
-    <div class="tf-btns">
-      <button class="tf-btn t" onclick="answerTF(true)">TRUE</button>
-      <button class="tf-btn f" onclick="answerTF(false)">FALSE</button>
-    </div>
-    <div class="q-fb" id="tf-fb"></div>
-    <button class="btn-g" id="tf-next" style="display:none;margin-top:12px" onclick="nextTF()">Next →</button>`;
-}
-function answerTF(ans) {
-  const q = tfState.qs[tfState.cur];
-  document.querySelectorAll('.tf-btn').forEach(b => b.disabled = true);
-  const fb = document.getElementById('tf-fb');
-  if (ans === q.a) {
-    tfState.score++; addXP(5);
-    fb.className = 'q-fb correct show'; fb.textContent = '✓ ' + q.ex;
-  } else {
-    dbAddWeak(CU.id, q.id, 'True/False');
-    fb.className = 'q-fb wrong show'; fb.textContent = '✗ ' + q.ex;
-  }
-  document.getElementById('tf-next').style.display = 'inline-block';
-}
-function nextTF() { tfState.cur++; renderTFQ(); }
-
-// ─── WEAK SPOTS ───────────────────────────────────
-async function loadWeakSpots() {
-  const spots = await dbWeakSpots(CU.id);
-  const el = document.getElementById('ws-list');
-  if (!spots.length) {
-    el.innerHTML = `<div class="card"><p style="font-size:.8rem;color:var(--dim);text-align:center;padding:20px 0">🎯 No weak spots — keep practising and they will appear here.</p></div>`;
-    if (UP && UP.xp > 0) dbAddAch(CU.id, 'weak_cleared');
-    return;
-  }
-  const allQs = {};
-  DQ.forEach(q => allQs[q.id] = q.q);
-  TF.forEach(q => allQs[q.id] = q.st);
-  AQ.forEach(q => allQs[q.id] = q.q);
-  FB.forEach(q => allQs[q.id] = q.hint);
-  el.innerHTML = spots.map(s =>
-    `<div class="ws-item">
-      <div class="ws-q">${allQs[s.question_id] || s.question_id}<br><span style="font-size:.68rem;color:var(--dim)">${s.quiz_type}</span></div>
-      <div class="ws-cnt">✗ ${s.wrong_count}×</div>
-    </div>`
-  ).join('');
 }
 
-// ─── ACHIEVEMENTS ─────────────────────────────────
-function renderAchievements() {
-  document.getElementById('ach-grid').innerHTML = ACHDEFS.map(a =>
-    `<div class="ach-item${ACH.has(a.id)?' earned':''}">
-      <div class="ach-ic">${a.ic}</div>
-      <div class="ach-nm">${a.nm}</div>
-      <div class="ach-desc">${a.desc}</div>
-    </div>`
-  ).join('');
+function complete(d){
+
+progress += 33
+
+progressbar.style.width = progress+"%"
+
 }
 
-// ─── PLANNER ──────────────────────────────────────
-function renderPlanner() {
-  const days = [
-    {
-      ttl:'📖 Day 1 — Sunday, March 17',
-      sub:'Foundation: Narrative & Language',
-      tasks:[
-        'Study the Narrative Perspective section in full — take notes on 3rd person limited, free indirect speech, and dramatic irony.',
-        'Work through the Stylistic Devices quiz until you score 8/10 or higher.',
-        'Read all Symbols & Motifs — identify your top 3 for essay use.',
-        'Complete Fill in the Blank — cement the key passage vocabulary.',
-        'Review Key Quotes: pick 5 you will memorise for the exam.',
-        'Flashcards: go through all 20 words at least once.'
-      ]
-    },
-    {
-      ttl:'📖 Day 2 — Monday, March 18',
-      sub:'Consolidation: Characters & Emotion',
-      tasks:[
-        'Study the Emotional Journey section — understand how Jonas\'s arc mirrors the novel\'s themes.',
-        'Complete Quote Attribution until you score 8/10 or higher.',
-        'True/False rapid fire — identify and note your weak spots.',
-        'Visit Weak Spots and retry those questions in their original quizzes.',
-        'Write one practice PEA paragraph: choose ONE symbol and analyse it in full.',
-        'Re-read all Essay Tips (the gold boxes) in Narrative Perspective — these are your ready-made phrases.'
-      ]
-    },
-    {
-      ttl:'📝 Day 3 — Tuesday, March 19 · EXAM DAY',
-      sub:'Final Review: Confidence & Precision',
-      tasks:[
-        'Quick Flashcard run (15 min max) — only the words you found difficult.',
-        'Skim Key Quotes one final time — confirm your 5 memorised quotes.',
-        'Re-read Essay Tips in the Narrative Perspective section.',
-        'Remind yourself: 3rd person limited · free indirect speech · dramatic irony · euphemism · tonal shift.',
-        'You are ready. The Community prepared Jonas — your preparation has been your own.',
-        '🎯 Enter the exam. Write with precision and confidence.'
-      ]
-    }
-  ];
-  document.getElementById('pl-body').innerHTML = days.map(d =>
-    `<div class="pl-day">
-      <div class="pl-ttl">${d.ttl}</div>
-      <div class="pl-sub">${d.sub}</div>
-      ${d.tasks.map(t=>`<div class="pl-task"><div class="pl-dot"></div><div>${t}</div></div>`).join('')}
-    </div>`
-  ).join('');
-}
-
-// ─── INIT ─────────────────────────────────────────
-function initApp() {
-  renderDashboard();
-  renderSymbols();
-  renderQuotes('all');
-  renderEmotions();
-  initFlashcards();
-  renderAchievements();
-  renderPlanner();
-}
-
-document.addEventListener('DOMContentLoaded', () => switchTab('login'));
 </script>
+
 </body>
 </html>
