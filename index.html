@@ -3,54 +3,79 @@
 <head>
 
 <meta charset="UTF-8">
+<title>The Giver Learning Platform</title>
 
-<title>The Giver – Analysis Academy</title>
+<script type="module">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
+
+window.supabase = createClient(
+"https://rgvhzonoydahgadrzpqj.supabase.co",
+"sb_publishable_FZGhM9Fp-CcK5YpT9NSGqA_GQUZ3_Uz"
+)
+
+</script>
 
 <style>
 
 body{
-font-family:Arial;
+font-family: Inter, Arial;
 margin:0;
-background:#eef2f7;
+background:linear-gradient(135deg,#eef2ff,#f8fafc);
 }
 
 header{
-background:#111827;
-color:white;
-padding:25px;
+background:white;
+box-shadow:0 3px 10px rgba(0,0,0,0.08);
+padding:20px;
 text-align:center;
+}
+
+h1{
+margin:0;
+color:#1e293b;
 }
 
 .container{
 max-width:1100px;
 margin:auto;
-padding:20px;
+padding:30px;
 }
 
 .card{
 background:white;
-padding:25px;
-margin-bottom:20px;
-border-radius:10px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
+border-radius:16px;
+padding:30px;
+margin-bottom:25px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+transition:.2s;
+}
+
+.card:hover{
+transform:translateY(-3px);
 }
 
 button{
-padding:10px 16px;
-margin:5px;
-background:#2563eb;
-color:white;
+background:#4f46e5;
 border:none;
-border-radius:6px;
+padding:12px 18px;
+color:white;
+border-radius:8px;
 cursor:pointer;
+font-size:14px;
+margin-top:10px;
+}
+
+button:hover{
+background:#4338ca;
 }
 
 input,textarea{
-padding:10px;
-margin:5px 0;
 width:100%;
+padding:12px;
+border-radius:8px;
+border:1px solid #e2e8f0;
+margin-top:10px;
 }
 
 .hidden{
@@ -58,34 +83,51 @@ display:none;
 }
 
 .progress{
-background:#ddd;
-height:20px;
+height:18px;
+background:#e5e7eb;
 border-radius:10px;
+overflow:hidden;
 }
 
-.progressbar{
-height:20px;
-background:#2563eb;
+.bar{
+height:18px;
+background:#4f46e5;
 width:0%;
-border-radius:10px;
+transition:.3s;
 }
 
 .exercise{
-border:2px dashed #ccc;
-padding:15px;
-margin-top:10px;
+background:#f8fafc;
+padding:18px;
+border-radius:10px;
+margin-top:15px;
+}
+
+.quiz button{
+display:block;
+width:100%;
+margin-top:8px;
+}
+
+.tag{
+display:inline-block;
+background:#eef2ff;
+padding:5px 10px;
+border-radius:6px;
+font-size:12px;
+margin-bottom:8px;
 }
 
 </style>
+
 </head>
 
 <body>
 
 <header>
 
-<h1>The Giver – Interactive Analysis Course</h1>
-
-<p>Learn how to analyze novel excerpts (EF level)</p>
+<h1>The Giver – Analysis Academy</h1>
+<p>Interactive learning for novel analysis (EF level)</p>
 
 </header>
 
@@ -97,12 +139,14 @@ margin-top:10px;
 
 <h2>Login</h2>
 
-<input id="email" placeholder="email">
-<input id="password" type="password" placeholder="password">
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
 
 <button onclick="login()">Login</button>
 
-<button onclick="showRegister()">Register</button>
+<p>or</p>
+
+<button onclick="showRegister()">Create account</button>
 
 <p id="loginMsg"></p>
 
@@ -114,8 +158,8 @@ margin-top:10px;
 
 <h2>Create Account</h2>
 
-<input id="regEmail">
-<input id="regPass" type="password">
+<input id="regEmail" placeholder="Email">
+<input id="regPass" type="password" placeholder="Password">
 
 <button onclick="register()">Register</button>
 
@@ -134,9 +178,7 @@ margin-top:10px;
 <h2>Your Progress</h2>
 
 <div class="progress">
-
-<div id="progressbar" class="progressbar"></div>
-
+<div id="progressbar" class="bar"></div>
 </div>
 
 </div>
@@ -145,7 +187,7 @@ margin-top:10px;
 
 <h2>Learning Path</h2>
 
-<button onclick="openDay(1)">Day 1 – Story Understanding</button>
+<button onclick="openDay(1)">Day 1 – Understanding the Story</button>
 <button onclick="openDay(2)">Day 2 – Language Analysis</button>
 <button onclick="openDay(3)">Day 3 – Writing Analysis</button>
 
@@ -157,57 +199,32 @@ margin-top:10px;
 
 <div id="day1" class="card hidden">
 
-<h2>Day 1 – Understanding The Story</h2>
+<span class="tag">Story Understanding</span>
 
-<h3>About the novel</h3>
-
-<p>
-The novel follows Jonas, a boy living in a highly controlled society.
-The community removed pain and strong emotions.
-Jonas becomes the Receiver of Memory.
-</p>
-
-<!-- MAIN IDEA QUIZ -->
-
-<div class="exercise">
-
-<h3>Main Idea</h3>
+<h2>Day 1 – The World of The Giver</h2>
 
 <p>
-Why does the society remove memories?
+The novel follows Jonas, who lives in a highly controlled community.
+The society removed pain, memories and emotions.
 </p>
 
-<button onclick="mainidea('a')">To control people</button>
-<button onclick="mainidea('b')">To improve technology</button>
-<button onclick="mainidea('c')">To make people stronger</button>
+<div class="exercise quiz">
 
-<p id="mainideaResult"></p>
+<h3>Main Theme</h3>
 
-</div>
+<p>Why were memories removed?</p>
 
-<!-- CHARACTER MATCH -->
-
-<div class="exercise">
-
-<h3>Character Match</h3>
-
-<p>Who trains Jonas?</p>
-
-<button onclick="char('a')">The Giver</button>
-<button onclick="char('b')">The Chief Elder</button>
-<button onclick="char('c')">Asher</button>
-
-<p id="charResult"></p>
+<button onclick="answer(this,true)">To control society</button>
+<button onclick="answer(this,false)">To improve science</button>
+<button onclick="answer(this,false)">To increase population</button>
 
 </div>
-
-<!-- VOCAB -->
 
 <div class="exercise">
 
 <h3>Vocabulary</h3>
 
-<p>Translate: "community"</p>
+<p>Translate: "memory"</p>
 
 <input id="vocab">
 
@@ -217,7 +234,19 @@ Why does the society remove memories?
 
 </div>
 
-<button onclick="complete(1)">Complete Day 1</button>
+<div class="exercise">
+
+<h3>Character</h3>
+
+<p>Who trains Jonas?</p>
+
+<button onclick="answer(this,true)">The Giver</button>
+<button onclick="answer(this,false)">Asher</button>
+<button onclick="answer(this,false)">Chief Elder</button>
+
+</div>
+
+<button onclick="completeDay(1)">Finish Day 1</button>
 
 </div>
 
@@ -225,37 +254,31 @@ Why does the society remove memories?
 
 <div id="day2" class="card hidden">
 
-<h2>Day 2 – Language and Analysis</h2>
+<span class="tag">Language & Analysis</span>
 
-<div class="exercise">
+<h2>Day 2 – Literary Techniques</h2>
+
+<div class="exercise quiz">
 
 <h3>Symbolism</h3>
 
-<p>
-What does color symbolize in the novel?
-</p>
+<p>What do colors symbolize?</p>
 
-<button onclick="symbol('a')">Emotion and truth</button>
-<button onclick="symbol('b')">Technology</button>
-<button onclick="symbol('c')">Food</button>
-
-<p id="symbolResult"></p>
+<button onclick="answer(this,true)">Emotion and truth</button>
+<button onclick="answer(this,false)">Technology</button>
+<button onclick="answer(this,false)">Weather</button>
 
 </div>
 
-<div class="exercise">
+<div class="exercise quiz">
 
 <h3>Tone</h3>
 
-<p>
-The community seems calm but also disturbing.
-</p>
+<p>The society seems calm but disturbing.</p>
 
-<button onclick="tone('a')">Peaceful but artificial</button>
-<button onclick="tone('b')">Funny</button>
-<button onclick="tone('c')">Romantic</button>
-
-<p id="toneResult"></p>
+<button onclick="answer(this,true)">Artificial peace</button>
+<button onclick="answer(this,false)">Comedy</button>
+<button onclick="answer(this,false)">Romance</button>
 
 </div>
 
@@ -263,19 +286,17 @@ The community seems calm but also disturbing.
 
 <h3>Quote Analysis</h3>
 
-<p>
-"He felt something stir inside him."
-</p>
+<p>"He felt something stir inside him."</p>
 
-<input id="quoteAnalysis">
+<textarea id="analysis"></textarea>
 
-<button onclick="checkQuote()">Check</button>
+<button onclick="checkAnalysis()">Check</button>
 
-<p id="quoteResult"></p>
+<p id="analysisResult"></p>
 
 </div>
 
-<button onclick="complete(2)">Complete Day 2</button>
+<button onclick="completeDay(2)">Finish Day 2</button>
 
 </div>
 
@@ -283,27 +304,25 @@ The community seems calm but also disturbing.
 
 <div id="day3" class="card hidden">
 
-<h2>Day 3 – Writing an Analysis</h2>
+<span class="tag">Essay Writing</span>
 
-<div class="exercise">
+<h2>Day 3 – Writing a Novel Analysis</h2>
+
+<div class="exercise quiz">
 
 <h3>Essay Structure</h3>
 
-<p>
-What comes first in an analysis?
-</p>
+<p>What comes first?</p>
 
-<button onclick="structure('a')">Introduction</button>
-<button onclick="structure('b')">Example</button>
-<button onclick="structure('c')">Conclusion</button>
-
-<p id="structureResult"></p>
+<button onclick="answer(this,true)">Introduction</button>
+<button onclick="answer(this,false)">Conclusion</button>
+<button onclick="answer(this,false)">Example</button>
 
 </div>
 
 <div class="exercise">
 
-<h3>Write a Short Analysis</h3>
+<h3>Write a short paragraph</h3>
 
 <textarea id="essay" rows="8"></textarea>
 
@@ -313,7 +332,7 @@ What comes first in an analysis?
 
 </div>
 
-<button onclick="complete(3)">Finish Course</button>
+<button onclick="completeDay(3)">Finish Course</button>
 
 </div>
 
@@ -321,12 +340,7 @@ What comes first in an analysis?
 
 <script>
 
-const supabase = window.supabase.createClient(
-"https://rgvhzonoydahgadrzpqj.supabase.co",
-"sb_publishable_FZGhM9Fp-CcK5YpT9NSGqA_GQUZ3_Uz"
-)
-
-let progress=0
+let progress = 0
 
 function showRegister(){
 loginCard.classList.add("hidden")
@@ -340,18 +354,18 @@ loginCard.classList.remove("hidden")
 
 async function register(){
 
-const {error} = await supabase.auth.signUp({
+const {error} = await window.supabase.auth.signUp({
 email:regEmail.value,
 password:regPass.value
 })
 
-regMsg.innerText = error?error.message:"Account created"
+regMsg.innerText = error ? error.message : "Account created"
 
 }
 
 async function login(){
 
-const {error} = await supabase.auth.signInWithPassword({
+const {error} = await window.supabase.auth.signInWithPassword({
 email:email.value,
 password:password.value
 })
@@ -366,85 +380,56 @@ dashboard.classList.remove("hidden")
 
 }
 
-function openDay(d){
+function openDay(day){
 
 day1.classList.add("hidden")
 day2.classList.add("hidden")
 day3.classList.add("hidden")
 
-document.getElementById("day"+d).classList.remove("hidden")
+document.getElementById("day"+day).classList.remove("hidden")
 
 }
 
-function mainidea(a){
+function answer(btn,correct){
 
-mainideaResult.innerText =
-a==="a" ? "Correct" : "Think again"
-
-}
-
-function char(a){
-
-charResult.innerText =
-a==="a" ? "Correct" : "Wrong"
+btn.style.background = correct ? "#22c55e" : "#ef4444"
 
 }
 
 function checkVocab(){
 
 vocabResult.innerText =
-vocab.value.toLowerCase()=="gemeinschaft"
+vocab.value.toLowerCase().includes("erinner")
 ? "Correct"
-: "Not quite"
+: "Try again"
 
 }
 
-function symbol(a){
+function checkAnalysis(){
 
-symbolResult.innerText =
-a==="a" ? "Correct" : "Try again"
-
-}
-
-function tone(a){
-
-toneResult.innerText =
-a==="a" ? "Correct" : "Wrong"
-
-}
-
-function checkQuote(){
-
-if(quoteAnalysis.value.length>20)
-quoteResult.innerText="Good analysis"
+if(analysis.value.length>20)
+analysisResult.innerText="Good analysis"
 
 else
-quoteResult.innerText="Write more"
-
-}
-
-function structure(a){
-
-structureResult.innerText =
-a==="a" ? "Correct" : "Wrong"
+analysisResult.innerText="Write more detail"
 
 }
 
 function checkEssay(){
 
 if(essay.value.length>120)
-essayResult.innerText="Good EF-level paragraph"
+essayResult.innerText="Good paragraph"
 
 else
-essayResult.innerText="Write more detail"
+essayResult.innerText="Write more"
 
 }
 
-function complete(d){
+function completeDay(day){
 
 progress += 33
 
-progressbar.style.width = progress+"%"
+progressbar.style.width = progress + "%"
 
 }
 
